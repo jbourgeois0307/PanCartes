@@ -56,19 +56,11 @@ public class Jeu {
     }
 
     //MÉTHODES DE MUTATION
-    public void setPointageCourant(int pointageCourant){
-        this.pointageCourant=pointageCourant;
-    }
-
     public void setPointageMaximal(int pointage){
         this.pointageMaximal = pointage;
-        sauvegarderPointageMaximal(pointage);
     }
 
     //MÉTHODES
-    public void retirerCartePresente(int index){
-        cartesPresentes.set(index,null);
-    }
 
     public int calculerScore(){
         int score = 10000;
@@ -77,18 +69,32 @@ public class Jeu {
         return pointageCourant;
     }
 
-    public void ajoutCartesPresentes(int index1){
-        cartesPresentes.set(index1,pilePrincipale.sortirCarteAleatoire());
+    public int ajoutCartesPresentes(){
+        Carte carteAleatoireAjoutee = null;
+        for(int i=0; i<cartesPresentes.size();i++){
+            if(cartesPresentes.get(i)==null){
+                Carte carteSortie = pilePrincipale.sortirCarteAleatoire();
+                cartesPresentes.set(i,carteSortie);
+                return carteSortie.getValeur();
+            }
+        }
+        return -1;
+    }
+
+    public void retirerCartePresente(Carte c){
+        for(int i=0; i<cartesPresentes.size();i++){
+            if(cartesPresentes.get(i)!=null){
+                if(cartesPresentes.get(i).getValeur()==c.getValeur()){
+                    cartesPresentes.set(i,null);
+                }
+            }
+        }
     }
 
     public boolean ajoutASuite(String nomSuite,Carte c){
         return htSuites.get(nomSuite).ajouterCarteASuite(c);
     }
 
-
-    private void sauvegarderPointageMaximal(int pointage){
-        //Requête SQLite
-    }
 
     private void peuplerCartesPresentes(){
         for(int i=0; i<Constantes.MAX_CARTES_PRESENTES;++i){
@@ -124,7 +130,6 @@ public class Jeu {
     }
 
     public boolean deplacementValide(){
-        // À FAIRE
         boolean isDeplacementValide = false;
         for(Carte c:cartesPresentes){
             if(htSuites.get("croissant1").testAjouterCarteASuite(c)
@@ -135,6 +140,13 @@ public class Jeu {
             }
         }
         return isDeplacementValide;
+    }
+
+    public boolean comparerScore(){
+        if(pointageCourant>pointageMaximal){
+            return true;
+        }
+        return false;
     }
 
 }

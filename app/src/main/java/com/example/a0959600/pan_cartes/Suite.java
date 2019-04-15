@@ -29,29 +29,34 @@ public class Suite {
         boolean ajoutValide = false;
         int valCarteAjoutee = c.getValeur();
         int valDerniereCartePile = pile.lastElement().getValeur();
-        switch (ordre) {
-            case CROISSANT:
-                if (pile.isEmpty() && valCarteAjoutee > initialVal) {
-                    ajoutValide = true;
-                }
-                if (valCarteAjoutee > pile.lastElement().getValeur()) {
-                    ajoutValide = true;
-                }
-                //RÈGLE DE 10
-                if (valCarteAjoutee == (valDerniereCartePile - 10))
-                    ajoutValide = true;
-                break;
-            case DECROISSANT:
-                if (pile.isEmpty() && valCarteAjoutee < initialVal) {
-                    ajoutValide = true;
-                }
-                if (valCarteAjoutee < pile.lastElement().getValeur()) {
-                    ajoutValide = true;
-                }
-                //RÈGLE DE 10
-                if (valCarteAjoutee == (valDerniereCartePile + 10))
-                    ajoutValide = true;
-                break;
+        if(!pile.isEmpty()){
+            switch (ordre) {
+                case CROISSANT:
+                    if (pile.isEmpty() && valCarteAjoutee > initialVal) {
+                        ajoutValide = true;
+                    }
+                    if (valCarteAjoutee > pile.lastElement().getValeur()) {
+                        ajoutValide = true;
+                    }
+                    //RÈGLE DE 10
+                    if (valCarteAjoutee == (valDerniereCartePile - 10))
+                        ajoutValide = true;
+                    break;
+                case DECROISSANT:
+                    if (pile.isEmpty() && valCarteAjoutee < initialVal) {
+                        ajoutValide = true;
+                    }
+                    if (valCarteAjoutee < pile.lastElement().getValeur()) {
+                        ajoutValide = true;
+                    }
+                    //RÈGLE DE 10
+                    if (valCarteAjoutee == (valDerniereCartePile + 10))
+                        ajoutValide = true;
+                    break;
+            }
+        }
+        else{
+            return pile.add(c);
         }
         return ajoutValide;
     }
@@ -59,32 +64,37 @@ public class Suite {
     public boolean ajouterCarteASuite(Carte c) {
         boolean ajoutValide = false;
         int valCarteAjoutee = c.getValeur();
-        int valDerniereCartePile = pile.lastElement().getValeur();
-        switch (ordre) {
-            case CROISSANT:
-                if (pile.isEmpty() && valCarteAjoutee > initialVal) {
-                    ajoutValide = true;
-                }
-                if (valCarteAjoutee > pile.lastElement().getValeur()) {
-                    ajoutValide = true;
-                }
-                //RÈGLE DE 10
-                if (valCarteAjoutee == (valDerniereCartePile - 10))
-                    ajoutValide = true;
-                break;
-            case DECROISSANT:
-                if (pile.isEmpty() && valCarteAjoutee < initialVal) {
-                    ajoutValide = true;
-                }
-                if (valCarteAjoutee < pile.lastElement().getValeur()) {
-                    ajoutValide = true;
-                }
-                //RÈGLE DE 10
-                if (valCarteAjoutee == (valDerniereCartePile + 10))
-                    ajoutValide = true;
-                break;
+        if(!pile.isEmpty()){
+            int valDerniereCartePile = pile.lastElement().getValeur();
+            switch (ordre) {
+                case CROISSANT:
+                    if (pile.isEmpty() && valCarteAjoutee > initialVal) {
+                        ajoutValide = true;
+                    }
+                    if (valCarteAjoutee > pile.lastElement().getValeur()) {
+                        ajoutValide = true;
+                    }
+                    //RÈGLE DE 10
+                    if (valCarteAjoutee == (valDerniereCartePile - 10))
+                        ajoutValide = true;
+                    break;
+                case DECROISSANT:
+                    if (pile.isEmpty() && valCarteAjoutee < initialVal) {
+                        ajoutValide = true;
+                    }
+                    if (valCarteAjoutee < pile.lastElement().getValeur()) {
+                        ajoutValide = true;
+                    }
+                    //RÈGLE DE 10
+                    if (valCarteAjoutee == (valDerniereCartePile + 10))
+                        ajoutValide = true;
+                    break;
+            }
+            if(ajoutValide){
+                return pile.add(c);
+            }
         }
-        if(ajoutValide){
+        else{
             return pile.add(c);
         }
         return ajoutValide;

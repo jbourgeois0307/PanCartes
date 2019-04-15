@@ -345,7 +345,7 @@
         <TableRow
             android:id="@+id/zoneBasRangee1"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="0dp"
             android:layout_weight="1">
 
             <android.support.constraint.ConstraintLayout
@@ -383,7 +383,7 @@
         <TableRow
             android:id="@+id/zoneBasRangee2"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="0dp"
             android:layout_weight="1">
 
             <android.support.constraint.ConstraintLayout

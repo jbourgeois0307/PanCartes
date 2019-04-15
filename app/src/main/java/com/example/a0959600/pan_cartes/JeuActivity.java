@@ -17,11 +17,13 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Vector;
 
 public class JeuActivity extends AppCompatActivity {
     TextView tvObjCartesRestantes;
     TextView tvObjScore;
-    TextView tvObjSuite1
+    Vector<Carte> vectCarteRetiree = new Vector<Carte>();
+    ConstraintLayout tvObjSuite1
             ,tvObjSuite2
             ,tvObjSuite3
             ,tvObjSuite4;
@@ -41,30 +43,24 @@ public class JeuActivity extends AppCompatActivity {
         tvObjCartesRestantes=findViewById(R.id.tvCartesRestantes);
         tvObjScore=findViewById(R.id.tvScore);
 
-        tvObjSuite1 = findViewById(R.id.tvSuite1);
-        tvObjSuite2 = findViewById(R.id.tvSuite2);
-        tvObjSuite3 = findViewById(R.id.tvSuite3);
-        tvObjSuite4 = findViewById(R.id.tvSuite4);
+        tvObjSuite1 = findViewById(R.id.zoneSuite1);
+        tvObjSuite2 = findViewById(R.id.zoneSuite2);
+        tvObjSuite3 = findViewById(R.id.zoneSuite3);
+        tvObjSuite4 = findViewById(R.id.zoneSuite4);
 
         rangee1 = findViewById(R.id.zoneBasRangee1);
         rangee2 = findViewById(R.id.zoneBasRangee2);
+
+        ec = new Ecouteur();
 
         this.placerCartesInitiales();
         this.setTextViewSuites();
         this.mettreAJourInterface();
 
-        ec = new Ecouteur();
-
-        for(int i = 0; i<4; ++i){
-            TextView tv = (TextView)((ConstraintLayout)rangee1.getVirtualChildAt(i)).getChildAt(0);
-            tv.setOnDragListener(ec);
-            tv.setOnTouchListener(ec);
-        }
-        for(int i = 0; i<4; ++i){
-            TextView tv = (TextView)((ConstraintLayout)rangee2.getVirtualChildAt(i)).getChildAt(0);
-            tv.setOnDragListener(ec);
-            tv.setOnTouchListener(ec);
-        }
+        tvObjSuite1.setOnDragListener(ec);
+        tvObjSuite2.setOnDragListener(ec);
+        tvObjSuite3.setOnDragListener(ec);
+        tvObjSuite4.setOnDragListener(ec);
 
 
     }
@@ -76,6 +72,32 @@ public class JeuActivity extends AppCompatActivity {
             finish();
         }*/
         //ENTÊTE
+        jeu.calculerScore();
+
+        if(vectCarteRetiree.size()>=2){
+            for(Carte c: vectCarteRetiree){
+                int valCarteSortie= jeu.ajoutCartesPresentes();
+
+                boolean aucunEspaceTrouve=true;
+
+                for(int i=0; i<rangee1.getVirtualChildCount();i++){
+                    System.out.println(rangee1.getVirtualChildAt(i));
+                    if(((ConstraintLayout)rangee1.getVirtualChildAt(i)).getChildAt(0)==null){
+                        aucunEspaceTrouve=false;
+                        creerTextViewCarte(valCarteSortie,(ConstraintLayout)rangee1.getVirtualChildAt(i));
+                    }
+                }
+
+                if(aucunEspaceTrouve){
+                    for(int i=0; i<rangee2.getVirtualChildCount();i++){
+                        if(((ConstraintLayout)rangee2.getVirtualChildAt(i)).getChildAt(0)==null){
+                            creerTextViewCarte(valCarteSortie,(ConstraintLayout)rangee2.getVirtualChildAt(i));
+                        }
+                    }
+                }
+            }
+            vectCarteRetiree.clear();
+        }
         tvObjCartesRestantes.setText(
                 String.valueOf(jeu.getCartesRestantesPilePrincipale())
         );
@@ -83,6 +105,11 @@ public class JeuActivity extends AppCompatActivity {
         tvObjScore.setText(
                 String.valueOf(jeu.getPointageCourant())
         );
+
+        if(jeu.comparerScore()){
+            dbh.ajouterMeilleurScore(jeu.getPointageCourant());
+            jeu.setPointageMaximal(jeu.getPointageCourant());
+        }
 
     }
 
@@ -93,16 +120,16 @@ public class JeuActivity extends AppCompatActivity {
         }
         for(int i = 0; i<4; ++i){
             ConstraintLayout cl = (ConstraintLayout)rangee2.getChildAt(i);
-            creerTextViewCarte(jeu.getCartesPresentes().get(i).getValeur(),cl);
+            creerTextViewCarte(jeu.getCartesPresentes().get(i+4).getValeur(),cl);
         }
 
     }
 
     public void setTextViewSuites(){
-        tvObjSuite1.setText(String.valueOf(jeu.getHtSuites().get("croissant1").getInitialVal()));
-        tvObjSuite2.setText(String.valueOf(jeu.getHtSuites().get("croissant2").getInitialVal()));
-        tvObjSuite3.setText(String.valueOf(jeu.getHtSuites().get("decroissant1").getInitialVal()));
-        tvObjSuite4.setText(String.valueOf(jeu.getHtSuites().get("decroissant2").getInitialVal()));
+        ((TextView)tvObjSuite1.getChildAt(0)).setText(String.valueOf(jeu.getHtSuites().get("croissant1").getInitialVal()));
+        ((TextView)tvObjSuite2.getChildAt(0)).setText(String.valueOf(jeu.getHtSuites().get("croissant2").getInitialVal()));
+        ((TextView)tvObjSuite3.getChildAt(0)).setText(String.valueOf(jeu.getHtSuites().get("decroissant1").getInitialVal()));
+        ((TextView)tvObjSuite4.getChildAt(0)).setText(String.valueOf(jeu.getHtSuites().get("decroissant2").getInitialVal()));
     }
 
     //Créer une carte en TextView et la position là demandée
@@ -118,6 +145,8 @@ public class JeuActivity extends AppCompatActivity {
         tv.setTextColor(Color.parseColor("#FFFFFF"));
         tv.setTextSize(25);
         tv.setBackground(getResources().getDrawable(R.drawable.custom_card));
+        tv.setOnDragListener(ec);
+        tv.setOnTouchListener(ec);
         cl.addView(tv);
         ConstraintSet cs = new ConstraintSet();
         cs.clone(cl);
@@ -130,37 +159,67 @@ public class JeuActivity extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
-
+            final View view = (View) event.getLocalState();
+            Carte carteDeplacee = new Carte(Integer.valueOf(((TextView) view).getText().toString()));
             switch(event.getAction()){
                 case DragEvent.ACTION_DRAG_ENTERED:
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
                     break;
                 case DragEvent.ACTION_DROP:
-                    System.out.println("ici!");
-                    View draggedTV = (View) event.getLocalState();
-                    LinearLayout parent = (LinearLayout) draggedTV.getParent();
-                    LinearLayout container = (LinearLayout)v;
-
-                    /*if(container==banqueFem){
-                        if(dbh.verifierGenre(((TextView)draggedTV).getText().toString(),"feminin")){
-                            parent.removeView(draggedTV);
-                            container.addView(draggedTV);
-                        }
-                    }
-                    if(container==banqueMasc){
-                        if(dbh.verifierGenre(((TextView)draggedTV).getText().toString().toString(),"masculin")){
-                            parent.removeView(draggedTV);
-                            container.addView(draggedTV);
-                        }
+                    ConstraintLayout parent = (ConstraintLayout) view.getParent();
+                    ConstraintLayout container=null;
+                    boolean dropValide = false;
+                    if(v instanceof TextView){
+                        container = (ConstraintLayout)v.getParent();
                     }
                     else{
-                        ((LinearLayout)draggedTV.getParent()).addView(draggedTV);
+                        container = (ConstraintLayout)v;
                     }
-*/
-                    draggedTV.setVisibility(View.VISIBLE);
+
+                    if(container==findViewById(R.id.zoneSuite1)){
+
+                        if(jeu.ajoutASuite("croissant1",carteDeplacee)){
+                            dropValide = true;
+
+                        }
+                    }
+                    if(container==findViewById(R.id.zoneSuite2)){
+                        if(jeu.ajoutASuite("croissant2",carteDeplacee)){
+                            dropValide = true;
+                        }
+                    }
+                    if(container==findViewById(R.id.zoneSuite3)){
+                        if(jeu.ajoutASuite("decroissant1",carteDeplacee)){
+                            dropValide = true;
+                        }
+                    }
+                    if(container==findViewById(R.id.zoneSuite4)){
+                        if(jeu.ajoutASuite("decroissant2",carteDeplacee)){
+                            dropValide=true;
+                        }
+                    }
+                    if(dropValide){
+                        vectCarteRetiree.add(carteDeplacee);
+                        jeu.retirerCartePresente(carteDeplacee);
+
+                        parent.removeView(view);
+                        container.addView(view);
+                        view.setVisibility(View.VISIBLE);
+                        //((TextView)view).setGravity(Gravity.CENTER);
+                        ConstraintSet cs = new ConstraintSet();
+                        cs.clone(container);
+                        cs.centerHorizontally(view.getId(),container.getId());
+                        cs.centerVertically(view.getId(),container.getId());
+                        cs.applyTo(container);
+                    }
+                    else{
+                        view.setVisibility(View.VISIBLE);
+                    }
+                    mettreAJourInterface();
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
+                    view.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
