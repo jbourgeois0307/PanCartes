@@ -335,103 +335,86 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TableLayout
+        android:id="@+id/zoneBasTable"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:orientation="horizontal">
+        android:stretchColumns="*">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente0"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-
-            </android.support.constraint.ConstraintLayout>
+        <TableRow
+            android:id="@+id/zoneBasRangee1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente4"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-
-            </android.support.constraint.ConstraintLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-            </android.support.constraint.ConstraintLayout>
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente5"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-
-            </android.support.constraint.ConstraintLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:id="@+id/zoneCartePresente7"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente6"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteX="192dp">
 
             </android.support.constraint.ConstraintLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/zoneCartePresente5"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteY="219dp">
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/zoneCartePresente4"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteY="219dp">
+
+            </android.support.constraint.ConstraintLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/zoneBasRangee2"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteX="171dp">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
-                android:id="@+id/zoneCartePresente7"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:id="@+id/zoneCartePresente2"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteY="219dp">
 
             </android.support.constraint.ConstraintLayout>
-        </LinearLayout>
 
-    </LinearLayout>
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/zoneCartePresente1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                tools:layout_editor_absoluteX="768dp"
+                tools:layout_editor_absoluteY="219dp">
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/zoneCartePresente0"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"></android.support.constraint.ConstraintLayout>
+        </TableRow>
+    </TableLayout>
 </LinearLayout>

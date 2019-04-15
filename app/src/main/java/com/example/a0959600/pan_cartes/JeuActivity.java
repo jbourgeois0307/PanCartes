@@ -8,7 +8,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,20 +25,15 @@ public class JeuActivity extends AppCompatActivity {
             ,tvObjSuite2
             ,tvObjSuite3
             ,tvObjSuite4;
-    ConstraintLayout zoneCarte0
-            ,zoneCarte1
-            ,zoneCarte2
-            ,zoneCarte3
-            ,zoneCarte4
-            ,zoneCarte5
-            ,zoneCarte6
-            ,zoneCarte7;
+    TableRow rangee1, rangee2;
     Jeu jeu;
+    DatabaseHelper dbh;
+    Ecouteur ec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jeu);
-
+        dbh = DatabaseHelper.getInstance(this);
         jeu = Jeu.getInstance();
 
         jeu.redemarrerPartie();
@@ -46,19 +46,25 @@ public class JeuActivity extends AppCompatActivity {
         tvObjSuite3 = findViewById(R.id.tvSuite3);
         tvObjSuite4 = findViewById(R.id.tvSuite4);
 
-        zoneCarte0 = findViewById(R.id.zoneCartePresente0);
-        zoneCarte1 = findViewById(R.id.zoneCartePresente1);
-        zoneCarte2 = findViewById(R.id.zoneCartePresente2);
-        zoneCarte3 = findViewById(R.id.zoneCartePresente3);
-        zoneCarte4 = findViewById(R.id.zoneCartePresente4);
-        zoneCarte5 = findViewById(R.id.zoneCartePresente5);
-        zoneCarte6 = findViewById(R.id.zoneCartePresente6);
-        zoneCarte7 = findViewById(R.id.zoneCartePresente7);
-
+        rangee1 = findViewById(R.id.zoneBasRangee1);
+        rangee2 = findViewById(R.id.zoneBasRangee2);
 
         this.placerCartesInitiales();
         this.setTextViewSuites();
         this.mettreAJourInterface();
+
+        ec = new Ecouteur();
+
+        for(int i = 0; i<4; ++i){
+            TextView tv = (TextView)((ConstraintLayout)rangee1.getVirtualChildAt(i)).getChildAt(0);
+            tv.setOnDragListener(ec);
+            tv.setOnTouchListener(ec);
+        }
+        for(int i = 0; i<4; ++i){
+            TextView tv = (TextView)((ConstraintLayout)rangee2.getVirtualChildAt(i)).getChildAt(0);
+            tv.setOnDragListener(ec);
+            tv.setOnTouchListener(ec);
+        }
 
 
     }
@@ -81,18 +87,14 @@ public class JeuActivity extends AppCompatActivity {
     }
 
     public void placerCartesInitiales(){
-        for(int i =0; i<8; i+=2){
-            jeu.ajoutCartesPresentes(i,i+1);
+        for(int i = 0; i<4; ++i){
+            ConstraintLayout cl = (ConstraintLayout)rangee1.getChildAt(i);
+            creerTextViewCarte(jeu.getCartesPresentes().get(i).getValeur(),cl);
         }
-
-        creerTextViewCarte(jeu.getCartesPresentes().get(0).getValeur(),zoneCarte0);
-        creerTextViewCarte(jeu.getCartesPresentes().get(1).getValeur(),zoneCarte1);
-        creerTextViewCarte(jeu.getCartesPresentes().get(2).getValeur(),zoneCarte2);
-        creerTextViewCarte(jeu.getCartesPresentes().get(3).getValeur(),zoneCarte3);
-        creerTextViewCarte(jeu.getCartesPresentes().get(4).getValeur(),zoneCarte4);
-        creerTextViewCarte(jeu.getCartesPresentes().get(5).getValeur(),zoneCarte5);
-        creerTextViewCarte(jeu.getCartesPresentes().get(6).getValeur(),zoneCarte6);
-        creerTextViewCarte(jeu.getCartesPresentes().get(7).getValeur(),zoneCarte7);
+        for(int i = 0; i<4; ++i){
+            ConstraintLayout cl = (ConstraintLayout)rangee2.getChildAt(i);
+            creerTextViewCarte(jeu.getCartesPresentes().get(i).getValeur(),cl);
+        }
 
     }
 
@@ -122,5 +124,61 @@ public class JeuActivity extends AppCompatActivity {
         cs.centerHorizontally(tv.getId(),cl.getId());
         cs.centerVertically(tv.getId(),cl.getId());
         cs.applyTo(cl);
+    }
+
+    public class Ecouteur implements View.OnTouchListener, View.OnDragListener {
+
+        @Override
+        public boolean onDrag(View v, DragEvent event) {
+
+            switch(event.getAction()){
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    break;
+                case DragEvent.ACTION_DROP:
+                    System.out.println("ici!");
+                    View draggedTV = (View) event.getLocalState();
+                    LinearLayout parent = (LinearLayout) draggedTV.getParent();
+                    LinearLayout container = (LinearLayout)v;
+
+                    /*if(container==banqueFem){
+                        if(dbh.verifierGenre(((TextView)draggedTV).getText().toString(),"feminin")){
+                            parent.removeView(draggedTV);
+                            container.addView(draggedTV);
+                        }
+                    }
+                    if(container==banqueMasc){
+                        if(dbh.verifierGenre(((TextView)draggedTV).getText().toString().toString(),"masculin")){
+                            parent.removeView(draggedTV);
+                            container.addView(draggedTV);
+                        }
+                    }
+                    else{
+                        ((LinearLayout)draggedTV.getParent()).addView(draggedTV);
+                    }
+*/
+                    draggedTV.setVisibility(View.VISIBLE);
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+            v.startDrag(null,shadowBuilder,v,0);
+            v.setVisibility(View.INVISIBLE);
+            return true;
+        }
+    }
+
+    protected void onStop(){
+        super.onStop();
+        dbh.fermerBD();
     }
 }

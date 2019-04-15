@@ -77,9 +77,8 @@ public class Jeu {
         return pointageCourant;
     }
 
-    public void ajoutCartesPresentes(int index1, int index2){
+    public void ajoutCartesPresentes(int index1){
         cartesPresentes.set(index1,pilePrincipale.sortirCarteAleatoire());
-        cartesPresentes.set(index2,pilePrincipale.sortirCarteAleatoire());
     }
 
     public boolean ajoutASuite(String nomSuite,Carte c){

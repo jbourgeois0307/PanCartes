@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         database=this.getWritableDatabase();
     }
 
-    private void fermerBD(){
+    public void fermerBD(){
         database.close();
     }
 
