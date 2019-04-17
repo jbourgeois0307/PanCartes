@@ -1,13 +1,16 @@
 package com.example.a0959600.pan_cartes;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.SystemClock;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -18,6 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,24 +46,12 @@ public class JeuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jeu);
+
         dbh = DatabaseHelper.getInstance(this);
 
         jeu = Jeu.getInstance();
 
         jeu.redemarrerPartie();
-
-        Vector<Integer> v= dbh.trouverMeilleurScore();
-        if(!v.isEmpty()){
-            jeu.setPointageMaximal(v.get(0));
-        }
-        else{
-            jeu.setPointageMaximal(0);
-        }
-
-
-        tvObjCartesRestantes=findViewById(R.id.tvCartesRestantes);
-        tvObjCartesRestantes.setText(String.valueOf(jeu.getCartesRestantesPilePrincipale()));
-        tvObjScore=findViewById(R.id.tvScore);
 
         tvObjSuite1 = findViewById(R.id.zoneSuite1);
         tvObjSuite2 = findViewById(R.id.zoneSuite2);
@@ -63,22 +59,45 @@ public class JeuActivity extends AppCompatActivity {
         tvObjSuite4 = findViewById(R.id.zoneSuite4);
 
         rangee1 = findViewById(R.id.zoneBasRangee1);
-
         rangee2 = findViewById(R.id.zoneBasRangee2);
 
-        chrono = findViewById(R.id.chrono);
-        chrono.start();
+        tvObjCartesRestantes=findViewById(R.id.tvCartesRestantes);
+
+        tvObjScore=findViewById(R.id.tvScore);
 
         ec = new Ecouteur();
-
-        this.placerCartesInitiales();
-        this.setTextViewSuites();
-
 
         tvObjSuite1.setOnDragListener(ec);
         tvObjSuite2.setOnDragListener(ec);
         tvObjSuite3.setOnDragListener(ec);
         tvObjSuite4.setOnDragListener(ec);
+
+
+
+        long tempsCourant = 0;
+        chrono = findViewById(R.id.chrono);
+        try{
+            tempsCourant=recupererTemps();
+        }
+        catch (Exception e){
+            if ((savedInstanceState != null) && (savedInstanceState.getSerializable("temps") != null)) {
+                tempsCourant = (long) savedInstanceState.getSerializable("temps");
+                chrono.setBase(SystemClock.elapsedRealtime() - tempsCourant);
+            }
+        }
+        Vector<Integer> v= dbh.trouverMeilleurScore();
+        if(!v.isEmpty()){
+            jeu.setPointageMaximal(v.get(0));
+        }
+        else{
+            jeu.setPointageMaximal(0);
+        }
+        tvObjCartesRestantes.setText(String.valueOf(jeu.getCartesRestantesPilePrincipale()));
+
+        chrono.start();
+
+        this.placerCartesInitiales();
+        this.setTextViewSuites();
 
     }
 
@@ -87,6 +106,11 @@ public class JeuActivity extends AppCompatActivity {
         this.enregistrerScore();
         dbh.reOuvrirBD();
         finish();
+    }
+
+    protected void onSaveInstanceState(Bundle infos) {
+        super.onSaveInstanceState(infos);
+        infos.putSerializable("temps", chrono.getBase());
     }
 
     public void mettreAJourInterface(){
@@ -197,23 +221,22 @@ public class JeuActivity extends AppCompatActivity {
 
                     if(container==findViewById(R.id.zoneSuite1)){
 
-                        if(jeu.ajoutASuite("croissant1",carteDeplacee)){
+                        if(jeu.ajoutASuite(Constantes.nomsSuite[0],carteDeplacee)){
                             dropValide = true;
-
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite2)){
-                        if(jeu.ajoutASuite("croissant2",carteDeplacee)){
+                        if(jeu.ajoutASuite(Constantes.nomsSuite[1],carteDeplacee)){
                             dropValide = true;
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite3)){
-                        if(jeu.ajoutASuite("decroissant1",carteDeplacee)){
+                        if(jeu.ajoutASuite(Constantes.nomsSuite[2],carteDeplacee)){
                             dropValide = true;
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite4)){
-                        if(jeu.ajoutASuite("decroissant2",carteDeplacee)){
+                        if(jeu.ajoutASuite(Constantes.nomsSuite[3],carteDeplacee)){
                             dropValide=true;
                         }
                     }
@@ -229,6 +252,14 @@ public class JeuActivity extends AppCompatActivity {
                         cs.centerHorizontally(view.getId(),container.getId());
                         cs.centerVertically(view.getId(),container.getId());
                         cs.applyTo(container);
+
+                        //Elles seront immuables
+                        ((TextView) view).setOnDragListener(null);
+                        ((TextView) view).setOnTouchListener(null);
+
+                        //Donne un léger angle
+                        float randAngle = (float)(Math.random()*((30-(-30)+1))+(-30));
+                        ((TextView) view).setRotation(randAngle);
                     }
                     else{
                         view.setVisibility(View.VISIBLE);
@@ -272,5 +303,33 @@ public class JeuActivity extends AppCompatActivity {
     protected void onStop(){
         dbh.reOuvrirBD();
         super.onStop();
+        sauvegarderPartie(chrono.getBase());
     }
+
+    public long recupererTemps() throws Exception{
+        long t = 0;
+        FileInputStream fis = openFileInput("fichier.ser"); // flux de communication
+        ObjectInputStream ois = new ObjectInputStream(fis); // flux de traitement
+        t = (long)ois.readObject();
+        ois.close();
+
+        return t;
+    }
+
+    public void sauvegarderPartie(Long temps){
+        try
+        {
+            FileOutputStream fos = openFileOutput("fichier.ser", Context.MODE_PRIVATE); //f lux de communication, MODE_APPEND contraire MODE_PRIVATE
+            ObjectOutputStream oos = new ObjectOutputStream(fos); // flux de traitement
+            oos.writeObject(temps);
+            oos.flush();
+            oos.close();
+        }
+        catch(Exception ex)
+        {
+            Log.v("erreur : ",ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
 }

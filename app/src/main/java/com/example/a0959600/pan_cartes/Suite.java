@@ -1,8 +1,9 @@
 package com.example.a0959600.pan_cartes;
 
+import java.io.Serializable;
 import java.util.Vector;
 
-public class Suite {
+public class Suite{
 
     private Vector<Carte> pile;
 

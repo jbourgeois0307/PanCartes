@@ -1,5 +1,6 @@
 package com.example.a0959600.pan_cartes;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -11,6 +12,7 @@ public class Jeu {
     private Pile pilePrincipale;
     private Hashtable<String,Suite> htSuites;
     private List<Carte> cartesPresentes;
+
     DatabaseHelper dbh;
 
     public static final Jeu instance = new Jeu();
@@ -22,12 +24,16 @@ public class Jeu {
 
         pilePrincipale = new Pile();
 
-        htSuites = new Hashtable<String,Suite>();
 
-        htSuites.put("croissant1",new Suite(Suite.Ordre.CROISSANT));
-        htSuites.put("croissant2",new Suite(Suite.Ordre.CROISSANT));
-        htSuites.put("decroissant1",new Suite(Suite.Ordre.DECROISSANT));
-        htSuites.put("decroissant2",new Suite(Suite.Ordre.DECROISSANT));
+        htSuites = new Hashtable<String,Suite>();
+        for(String s: Constantes.nomsSuite){
+            if(s.equals(Constantes.nomsSuite[0])||s.equals(Constantes.nomsSuite[1])){
+                htSuites.put(s,new Suite(Suite.Ordre.CROISSANT));
+            }
+            else{
+                htSuites.put(s,new Suite(Suite.Ordre.DECROISSANT));
+            }
+        }
 
         //Liste de taille fixe de 8
         cartesPresentes = Arrays.asList(new Carte[Constantes.MAX_CARTES_PRESENTES]);
@@ -66,8 +72,7 @@ public class Jeu {
     public int calculerScore(){
         int score = 10000;
         score/=pilePrincipale.getPileSize();
-        pointageCourant+=score;
-        return pointageCourant;
+        return pointageCourant+=score;
     }
 
     public int ajoutCartesPresentes(){
@@ -108,10 +113,14 @@ public class Jeu {
         pointageMaximal = 0;
         pilePrincipale = new Pile();
 
-        htSuites.put("croissant1",new Suite(Suite.Ordre.CROISSANT));
-        htSuites.put("croissant2",new Suite(Suite.Ordre.CROISSANT));
-        htSuites.put("decroissant1",new Suite(Suite.Ordre.DECROISSANT));
-        htSuites.put("decroissant2",new Suite(Suite.Ordre.DECROISSANT));
+        for(String s: Constantes.nomsSuite){
+            if(s.equals(Constantes.nomsSuite[0])||s.equals(Constantes.nomsSuite[1])){
+                htSuites.put(s,new Suite(Suite.Ordre.CROISSANT));
+            }
+            else{
+                htSuites.put(s,new Suite(Suite.Ordre.DECROISSANT));
+            }
+        }
 
         //Liste de taille fixe de 8
         cartesPresentes = Arrays.asList(new Carte[Constantes.MAX_CARTES_PRESENTES]);
@@ -134,11 +143,10 @@ public class Jeu {
         boolean isDeplacementValide = false;
         for(Carte c:cartesPresentes){
             if(c!=null){
-                if(htSuites.get("croissant1").testAjouterCarteASuite(c)
-                        ||htSuites.get("croissant2").testAjouterCarteASuite(c)
-                        ||htSuites.get("decroissant1").testAjouterCarteASuite(c)
-                        ||htSuites.get("decroissant2").testAjouterCarteASuite(c)){
-                    isDeplacementValide=true;
+                for(int i=0; i<4; ++i){
+                    if(htSuites.get(Constantes.nomsSuite[i]).testAjouterCarteASuite(c)){
+                        isDeplacementValide=true;
+                    }
                 }
             }
         }
