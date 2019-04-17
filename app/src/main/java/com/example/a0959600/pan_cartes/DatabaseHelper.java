@@ -29,12 +29,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         database=this.getWritableDatabase();
     }
 
-
-
     public void ajouterMeilleurScore(int score){
         ContentValues cv = new ContentValues();
         cv.put("highscore",score);
-        database.update("SCORE",cv,"_id = ?", new String[] {"1"});
+        int valRetour = database.update("SCORE",cv,"_id = ?", new String[] {"1"});
+        if(valRetour==0){
+            database.insertWithOnConflict("SCORE",null,cv,SQLiteDatabase.CONFLICT_REPLACE);
+        }
     }
 
     public Vector<Integer> trouverMeilleurScore(){

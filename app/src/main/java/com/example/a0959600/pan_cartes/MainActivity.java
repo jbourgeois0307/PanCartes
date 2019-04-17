@@ -27,8 +27,12 @@ public class MainActivity extends AppCompatActivity {
         tvScore = findViewById(R.id.tvHighscore);
 
         vectMeilleurScore = dbh.trouverMeilleurScore();
-        tvScore.setText(String.valueOf(vectMeilleurScore.get(0)));
-
+        if(!vectMeilleurScore.isEmpty()){
+            tvScore.setText(String.valueOf(vectMeilleurScore.get(0)));
+        }
+        else{
+            tvScore.setText(String.valueOf(0));
+        }
         ec = new Ecouteur();
 
         btnJouer.setOnClickListener(ec);

@@ -45,7 +45,13 @@ public class JeuActivity extends AppCompatActivity {
         jeu.redemarrerPartie();
 
         Vector<Integer> v= dbh.trouverMeilleurScore();
-        jeu.setPointageMaximal(v.get(0));
+        if(!v.isEmpty()){
+            jeu.setPointageMaximal(v.get(0));
+        }
+        else{
+            jeu.setPointageMaximal(0);
+        }
+
 
         tvObjCartesRestantes=findViewById(R.id.tvCartesRestantes);
         tvObjCartesRestantes.setText(String.valueOf(jeu.getCartesRestantesPilePrincipale()));
