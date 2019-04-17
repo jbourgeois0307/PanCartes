@@ -1,6 +1,7 @@
 package com.example.a0959600.pan_cartes;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,21 +15,19 @@ public class MainActivity extends AppCompatActivity {
     Button btnJouer;
     TextView tvScore;
     Vector<Integer> vectMeilleurScore;
+    DatabaseHelper dbh;
     int meilleurScore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbh = DatabaseHelper.getInstance(this);
 
         btnJouer = findViewById(R.id.btnJouer);
         tvScore = findViewById(R.id.tvHighscore);
 
-        vectMeilleurScore = DatabaseHelper.getInstance(MainActivity.this).trouverMeilleurScore();
-        for(Integer i: vectMeilleurScore){
-            meilleurScore = i;
-        }
-        tvScore.setText(String.valueOf(meilleurScore));
-
+        vectMeilleurScore = dbh.trouverMeilleurScore();
+        tvScore.setText(String.valueOf(vectMeilleurScore.get(0)));
 
         ec = new Ecouteur();
 
@@ -40,8 +39,20 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             if(v==btnJouer){
                 Intent i = new Intent(MainActivity.this,JeuActivity.class);
-                startActivity(i);
+                startActivityForResult(i,0);
             }
+        }
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            int nouveauScore = data.getIntExtra("nouveauScore",0);
+            if(nouveauScore!=0){
+                tvScore.setText(String.valueOf(nouveauScore));
+            }
+            dbh.fermerBD();
+            dbh = DatabaseHelper.getInstance(getApplicationContext());
         }
     }
 }

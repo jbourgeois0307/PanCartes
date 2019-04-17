@@ -37,7 +37,7 @@
                 android:gravity="center"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:text="97"
+                android:text="0"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
 
@@ -53,11 +53,11 @@
                 android:layout_height="0dp"
                 android:gravity="center"
                 android:layout_weight="1"
-                android:text="Temps restant"
+                android:text="Temps"
                 android:textColor="#FFFFFF" />
 
-            <TextView
-                android:id="@+id/tvTempsRestant"
+            <Chronometer
+                android:id="@+id/chrono"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:gravity="center"
@@ -237,8 +237,8 @@
                     android:layout_marginTop="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.636"
-                    app:layout_constraintStart_toEndOf="@+id/constraintLayout"
+                    app:layout_constraintHorizontal_bias="0.943"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.511"
                     app:srcCompat="@drawable/flechehaut" />
@@ -346,36 +346,40 @@
             android:id="@+id/zoneBasRangee1"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:gravity="top"
+            android:minHeight="453dp"
+            android:orientation="horizontal">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente7"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente6"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteX="192dp">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente5"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteY="219dp">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente4"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteY="219dp">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
         </TableRow>
@@ -384,37 +388,38 @@
             android:id="@+id/zoneBasRangee2"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:gravity="bottom"
+            android:minHeight="453dp"
+            android:orientation="horizontal">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente3"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteX="171dp">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente2"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteY="219dp">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
 
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente1"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                tools:layout_editor_absoluteX="768dp"
-                tools:layout_editor_absoluteY="219dp">
-
-            </android.support.constraint.ConstraintLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"></android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/zoneCartePresente0"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"></android.support.constraint.ConstraintLayout>
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"></android.support.constraint.ConstraintLayout>
         </TableRow>
     </TableLayout>
 </LinearLayout>

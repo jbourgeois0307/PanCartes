@@ -11,6 +11,7 @@ public class Jeu {
     private Pile pilePrincipale;
     private Hashtable<String,Suite> htSuites;
     private List<Carte> cartesPresentes;
+    DatabaseHelper dbh;
 
     public static final Jeu instance = new Jeu();
 
@@ -132,11 +133,13 @@ public class Jeu {
     public boolean deplacementValide(){
         boolean isDeplacementValide = false;
         for(Carte c:cartesPresentes){
-            if(htSuites.get("croissant1").testAjouterCarteASuite(c)
-                    ||htSuites.get("croissant2").testAjouterCarteASuite(c)
-                    ||htSuites.get("decroissant1").testAjouterCarteASuite(c)
-                    ||htSuites.get("decroissant2").testAjouterCarteASuite(c)){
-                isDeplacementValide=true;
+            if(c!=null){
+                if(htSuites.get("croissant1").testAjouterCarteASuite(c)
+                        ||htSuites.get("croissant2").testAjouterCarteASuite(c)
+                        ||htSuites.get("decroissant1").testAjouterCarteASuite(c)
+                        ||htSuites.get("decroissant2").testAjouterCarteASuite(c)){
+                    isDeplacementValide=true;
+                }
             }
         }
         return isDeplacementValide;

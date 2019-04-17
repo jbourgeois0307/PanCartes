@@ -29,14 +29,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         database=this.getWritableDatabase();
     }
 
-    public void fermerBD(){
-        database.close();
-    }
+
 
     public void ajouterMeilleurScore(int score){
         ContentValues cv = new ContentValues();
         cv.put("highscore",score);
-        database.insert("SCORE",null,cv);
+        database.update("SCORE",cv,"_id = ?", new String[] {"1"});
     }
 
     public Vector<Integer> trouverMeilleurScore(){
@@ -45,7 +43,19 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         while(c.moveToNext()){
             resultat.add(c.getInt(0));
         }
+        if(c != null && !c.isClosed()){
+            c.close();
+        }
         return resultat;
+    }
+
+    public void fermerBD(){
+        database.close();
+    }
+
+    public void reOuvrirBD(){
+        close();
+        database = this.getWritableDatabase();
     }
 
 
@@ -53,7 +63,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE SCORE( _id INTEGER PRIMARY KEY AUTOINCREMENT, highscore REAL);");
-
     }
 
     @Override

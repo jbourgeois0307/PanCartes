@@ -1,6 +1,7 @@
 package com.example.a0959600.pan_cartes;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -12,6 +13,7 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ public class JeuActivity extends AppCompatActivity {
             ,tvObjSuite3
             ,tvObjSuite4;
     TableRow rangee1, rangee2;
+    Chronometer chrono;
     Jeu jeu;
     DatabaseHelper dbh;
     Ecouteur ec;
@@ -36,11 +39,16 @@ public class JeuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_jeu);
         dbh = DatabaseHelper.getInstance(this);
+
         jeu = Jeu.getInstance();
 
         jeu.redemarrerPartie();
 
+        Vector<Integer> v= dbh.trouverMeilleurScore();
+        jeu.setPointageMaximal(v.get(0));
+
         tvObjCartesRestantes=findViewById(R.id.tvCartesRestantes);
+        tvObjCartesRestantes.setText(String.valueOf(jeu.getCartesRestantesPilePrincipale()));
         tvObjScore=findViewById(R.id.tvScore);
 
         tvObjSuite1 = findViewById(R.id.zoneSuite1);
@@ -49,49 +57,58 @@ public class JeuActivity extends AppCompatActivity {
         tvObjSuite4 = findViewById(R.id.zoneSuite4);
 
         rangee1 = findViewById(R.id.zoneBasRangee1);
+
         rangee2 = findViewById(R.id.zoneBasRangee2);
+
+        chrono = findViewById(R.id.chrono);
+        chrono.start();
 
         ec = new Ecouteur();
 
         this.placerCartesInitiales();
         this.setTextViewSuites();
-        this.mettreAJourInterface();
+
 
         tvObjSuite1.setOnDragListener(ec);
         tvObjSuite2.setOnDragListener(ec);
         tvObjSuite3.setOnDragListener(ec);
         tvObjSuite4.setOnDragListener(ec);
 
+    }
 
+    @Override
+    public void onBackPressed(){
+        this.enregistrerScore();
+        dbh.reOuvrirBD();
+        finish();
     }
 
     public void mettreAJourInterface(){
-        /*if(jeu.partieTerminee()){
-            //INSERT EN BD
-            jeu.setPointageMaximal(jeu.getPointageCourant());
+        //Test de condition de fin de partie
+        if(jeu.partieTerminee()){
+            this.enregistrerScore();
             finish();
-        }*/
-        //ENTÊTE
+        }
+
         jeu.calculerScore();
 
         if(vectCarteRetiree.size()>=2){
+            boucle:
             for(Carte c: vectCarteRetiree){
                 int valCarteSortie= jeu.ajoutCartesPresentes();
-
-                boolean aucunEspaceTrouve=true;
-
+                boolean carteCreee = false;
                 for(int i=0; i<rangee1.getVirtualChildCount();i++){
-                    System.out.println(rangee1.getVirtualChildAt(i));
                     if(((ConstraintLayout)rangee1.getVirtualChildAt(i)).getChildAt(0)==null){
-                        aucunEspaceTrouve=false;
                         creerTextViewCarte(valCarteSortie,(ConstraintLayout)rangee1.getVirtualChildAt(i));
+                        carteCreee=true;
+                        continue boucle;
                     }
                 }
-
-                if(aucunEspaceTrouve){
-                    for(int i=0; i<rangee2.getVirtualChildCount();i++){
-                        if(((ConstraintLayout)rangee2.getVirtualChildAt(i)).getChildAt(0)==null){
-                            creerTextViewCarte(valCarteSortie,(ConstraintLayout)rangee2.getVirtualChildAt(i));
+                if(!carteCreee) {
+                    for (int i = 0; i < rangee2.getVirtualChildCount(); i++) {
+                        if (((ConstraintLayout) rangee2.getVirtualChildAt(i)).getChildAt(0) == null) {
+                            creerTextViewCarte(valCarteSortie, (ConstraintLayout) rangee2.getVirtualChildAt(i));
+                            continue boucle;
                         }
                     }
                 }
@@ -105,12 +122,6 @@ public class JeuActivity extends AppCompatActivity {
         tvObjScore.setText(
                 String.valueOf(jeu.getPointageCourant())
         );
-
-        if(jeu.comparerScore()){
-            dbh.ajouterMeilleurScore(jeu.getPointageCourant());
-            jeu.setPointageMaximal(jeu.getPointageCourant());
-        }
-
     }
 
     public void placerCartesInitiales(){
@@ -141,6 +152,7 @@ public class JeuActivity extends AppCompatActivity {
         tv.setWidth((int)fWidth);
         tv.setId(val);
         tv.setHeight((int)fHeight);
+        tv.setMinHeight((int)fHeight);
         tv.setGravity(Gravity.CENTER);
         tv.setTextColor(Color.parseColor("#FFFFFF"));
         tv.setTextSize(25);
@@ -206,7 +218,6 @@ public class JeuActivity extends AppCompatActivity {
                         parent.removeView(view);
                         container.addView(view);
                         view.setVisibility(View.VISIBLE);
-                        //((TextView)view).setGravity(Gravity.CENTER);
                         ConstraintSet cs = new ConstraintSet();
                         cs.clone(container);
                         cs.centerHorizontally(view.getId(),container.getId());
@@ -236,8 +247,24 @@ public class JeuActivity extends AppCompatActivity {
         }
     }
 
+    public void enregistrerScore(){
+        Intent i = new Intent();
+
+        if(jeu.comparerScore()){
+
+            jeu.setPointageMaximal(jeu.getPointageCourant());
+            dbh.ajouterMeilleurScore(jeu.getPointageCourant());
+            i.putExtra("nouveauScore",jeu.getPointageCourant());
+
+        }
+        else{
+            i.putExtra("nouveauScore",0);
+        }
+        setResult(RESULT_OK,i);
+    }
+
     protected void onStop(){
+        dbh.reOuvrirBD();
         super.onStop();
-        dbh.fermerBD();
     }
 }

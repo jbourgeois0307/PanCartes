@@ -28,8 +28,9 @@ public class Suite {
     public boolean testAjouterCarteASuite(Carte c) {
         boolean ajoutValide = false;
         int valCarteAjoutee = c.getValeur();
-        int valDerniereCartePile = pile.lastElement().getValeur();
+
         if(!pile.isEmpty()){
+            int valDerniereCartePile = pile.lastElement().getValeur();
             switch (ordre) {
                 case CROISSANT:
                     if (pile.isEmpty() && valCarteAjoutee > initialVal) {
@@ -56,7 +57,8 @@ public class Suite {
             }
         }
         else{
-            return pile.add(c);
+            ajoutValide = true;
+            //return pile.add(c);
         }
         return ajoutValide;
     }
