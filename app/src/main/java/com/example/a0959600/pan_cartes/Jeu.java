@@ -95,10 +95,14 @@ public class Jeu {
         }
 
         if(suiteInteragie.getOrdre()== Suite.Ordre.CROISSANT){
-            score/=(valCarteDeplacee-valDernierCarteSuite);
+            int diff = valCarteDeplacee-valDernierCarteSuite;
+            diff = diff <=0 ? diff*=-1 : diff;
+            score/=(diff);
         }
         else{
-            score/=(valDernierCarteSuite-valCarteDeplacee);
+            int diff =valDernierCarteSuite-valCarteDeplacee;
+            diff = diff <=0 ? diff*=-1 : diff;
+            score/=(diff);
         }
 
         return pointageCourant+=score;
