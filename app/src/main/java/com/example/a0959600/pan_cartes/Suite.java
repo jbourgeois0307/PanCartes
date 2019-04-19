@@ -24,6 +24,15 @@ public class Suite{
         }
     }
 
+    //Méthode d'accès
+    public Vector<Carte> getPileSuite(){
+        return this.pile;
+    }
+
+    public Ordre getOrdre(){
+        return this.ordre;
+    }
+
     public int getInitialVal() { return initialVal; }
 
     public boolean testAjouterCarteASuite(Carte c) {

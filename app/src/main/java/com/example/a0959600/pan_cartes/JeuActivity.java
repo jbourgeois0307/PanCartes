@@ -42,6 +42,7 @@ public class JeuActivity extends AppCompatActivity {
     Jeu jeu;
     DatabaseHelper dbh;
     Ecouteur ec;
+    long tempsDernierMouvement;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +99,7 @@ public class JeuActivity extends AppCompatActivity {
 
         this.placerCartesInitiales();
         this.setTextViewSuites();
-
+        tempsDernierMouvement = 0;
     }
 
     @Override
@@ -113,14 +114,18 @@ public class JeuActivity extends AppCompatActivity {
         infos.putSerializable("temps", chrono.getBase());
     }
 
-    public void mettreAJourInterface(){
+    public void mettreAJourInterface(String nomSuite, Carte carteDeplacee){
+
+        this.compilerScore(nomSuite,carteDeplacee);
+
+        vectCarteRetiree.add(carteDeplacee);
+        jeu.retirerCartePresente(carteDeplacee);
+
         //Test de condition de fin de partie
         if(jeu.partieTerminee()){
             this.enregistrerScore();
             finish();
         }
-
-        jeu.calculerScore();
 
         if(vectCarteRetiree.size()>=2){
             boucle:
@@ -201,6 +206,7 @@ public class JeuActivity extends AppCompatActivity {
 
         @Override
         public boolean onDrag(View v, DragEvent event) {
+            String nomSuiteModifiee = "";
             final View view = (View) event.getLocalState();
             Carte carteDeplacee = new Carte(Integer.valueOf(((TextView) view).getText().toString()));
             switch(event.getAction()){
@@ -222,27 +228,31 @@ public class JeuActivity extends AppCompatActivity {
                     if(container==findViewById(R.id.zoneSuite1)){
 
                         if(jeu.ajoutASuite(Constantes.nomsSuite[0],carteDeplacee)){
+                            nomSuiteModifiee=Constantes.nomsSuite[0];
                             dropValide = true;
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite2)){
                         if(jeu.ajoutASuite(Constantes.nomsSuite[1],carteDeplacee)){
+                            nomSuiteModifiee=Constantes.nomsSuite[1];
                             dropValide = true;
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite3)){
                         if(jeu.ajoutASuite(Constantes.nomsSuite[2],carteDeplacee)){
+                            nomSuiteModifiee=Constantes.nomsSuite[2];
                             dropValide = true;
                         }
                     }
                     if(container==findViewById(R.id.zoneSuite4)){
                         if(jeu.ajoutASuite(Constantes.nomsSuite[3],carteDeplacee)){
+                            nomSuiteModifiee=Constantes.nomsSuite[3];
                             dropValide=true;
                         }
                     }
                     if(dropValide){
-                        vectCarteRetiree.add(carteDeplacee);
-                        jeu.retirerCartePresente(carteDeplacee);
+                        mettreAJourInterface(nomSuiteModifiee,carteDeplacee);
+
 
                         parent.removeView(view);
                         container.addView(view);
@@ -264,7 +274,7 @@ public class JeuActivity extends AppCompatActivity {
                     else{
                         view.setVisibility(View.VISIBLE);
                     }
-                    mettreAJourInterface();
+
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     view.setVisibility(View.VISIBLE);
@@ -330,6 +340,13 @@ public class JeuActivity extends AppCompatActivity {
             Log.v("erreur : ",ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    public void compilerScore(String nomSuite, Carte carteDeplacee){
+        long tempsDepuisOuvertureJeu = SystemClock.elapsedRealtime()-chrono.getBase();
+        long diffTemps = tempsDepuisOuvertureJeu-tempsDernierMouvement;
+        tempsDernierMouvement = tempsDepuisOuvertureJeu;
+        jeu.calculerScore(diffTemps,nomSuite,carteDeplacee);
     }
 
 }

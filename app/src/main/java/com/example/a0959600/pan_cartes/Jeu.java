@@ -69,9 +69,38 @@ public class Jeu {
 
     //MÉTHODES
 
-    public int calculerScore(){
-        int score = 10000;
+    public int calculerScore(long diffTempsEntreMouvement, String nomSuite, Carte carteDeplacee){
+        int score = 100000;
+
+        //Selon le temps
+        diffTempsEntreMouvement/=1000;
+        diffTempsEntreMouvement = diffTempsEntreMouvement == 0 ? 1 : diffTempsEntreMouvement;
+        score/=diffTempsEntreMouvement;
+
+        //Selon le nombre de cartes restantes
         score/=pilePrincipale.getPileSize();
+
+
+        //Selon la différence avec la dernière carte mise sur la suite
+        Suite suiteInteragie = htSuites.get(nomSuite);
+        int valCarteDeplacee = carteDeplacee.getValeur();
+        int valDernierCarteSuite=0;
+
+        if(suiteInteragie.getPileSuite().size()==1){
+            valDernierCarteSuite=suiteInteragie.getInitialVal();
+        }
+        else{
+            valDernierCarteSuite = suiteInteragie.getPileSuite()
+                    .get(suiteInteragie.getPileSuite().size()-2).getValeur();
+        }
+
+        if(suiteInteragie.getOrdre()== Suite.Ordre.CROISSANT){
+            score/=(valCarteDeplacee-valDernierCarteSuite);
+        }
+        else{
+            score/=(valDernierCarteSuite-valCarteDeplacee);
+        }
+
         return pointageCourant+=score;
     }
 
