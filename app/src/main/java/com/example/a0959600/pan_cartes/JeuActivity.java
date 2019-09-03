@@ -191,6 +191,7 @@ public class JeuActivity extends AppCompatActivity {
         tv.setGravity(Gravity.CENTER);
         tv.setTextColor(Color.parseColor("#FFFFFF"));
         tv.setTextSize(25);
+        tv.setElevation(20);
         tv.setBackground(getResources().getDrawable(R.drawable.custom_card));
         tv.setOnDragListener(ec);
         tv.setOnTouchListener(ec);
@@ -251,11 +252,9 @@ public class JeuActivity extends AppCompatActivity {
                         }
                     }
                     if(dropValide){
-                        mettreAJourInterface(nomSuiteModifiee,carteDeplacee);
-
-
                         parent.removeView(view);
                         container.addView(view);
+                        mettreAJourInterface(nomSuiteModifiee,carteDeplacee);
                         view.setVisibility(View.VISIBLE);
                         ConstraintSet cs = new ConstraintSet();
                         cs.clone(container);
